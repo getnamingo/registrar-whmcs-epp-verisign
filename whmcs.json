@@ -1,0 +1,23 @@
+{
+  "schema": "1.0",
+  "type": "whmcs-registrars",
+  "name": "verisign",
+  "license": "MIT",
+  "category": "domains",
+  "description": {
+    "name": "Namingo EPP (VeriSign)",
+    "tagline": "This module supports all gTLDs that use the VeriSign platform"
+  },
+  "logo": {
+    "filename": "logo.gif"
+  },
+  "support": {
+    "homepage": "https:\/\/namingo.org\/"
+  },
+  "authors": [
+    {
+      "name": "Namingo",
+      "homepage": "https:\/\/namingo.org\/"
+    }
+  ]
+}
