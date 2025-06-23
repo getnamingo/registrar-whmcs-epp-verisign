@@ -497,17 +497,17 @@ function verisign_GetNameservers($params = array())
             $return["ns{$i}"] = (string)$ns;
         }
         
-        $namingoDomainId = getNamingoDomainId($params['domainid']);
+        $whmcsDomainId = getWhmcsDomainIdFromNamingo($params['domainname']);
 
         $status = array();
-        Capsule::table('namingo_domain_status')->where('domain_id', '=', $namingoDomainId)->delete();
+        Capsule::table('namingo_domain_status')->where('domain_id', '=', $whmcsDomainId)->delete();
         foreach($r->status as $e) {
             $st = (string)$e->attributes()->s;
             if ($st == 'pendingDelete') {
                 $updatedDomainStatus = Capsule::table('tbldomains')->where('id', $params['domainid'])->update(['status' => 'Cancelled']);
             }
 
-            Capsule::table('namingo_domain_status')->insert(['domain_id' => $namingoDomainId, 'status' => $st]);
+            Capsule::table('namingo_domain_status')->insert(['domain_id' => $whmcsDomainId, 'status' => $st]);
         }
     }
 
@@ -1982,15 +1982,19 @@ function insertDomain($params, $contactIds) {
 }
 
 function getNamingoDomainId($whmcsDomainId) {
-    // Retrieve the `namingo_domain` ID in a single query using a join
-    $namingoDomain = Capsule::table('namingo_domain')
-        ->join('tbldomains', 'namingo_domain.name', '=', 'tbldomains.domain')
-        ->where('tbldomains.id', $whmcsDomainId)
-        ->select('namingo_domain.id')
-        ->first();
+    $result = Capsule::selectOne("
+        SELECT namingo_domain.id
+        FROM namingo_domain
+        JOIN tbldomains ON LOWER(namingo_domain.name) = LOWER(tbldomains.domain)
+        WHERE tbldomains.id = ?
+        LIMIT 1
+    ", [$whmcsDomainId]);
 
-    // Return the `id` from `namingo_domain` if found, otherwise null
-    return $namingoDomain ? $namingoDomain->id : null;
+    return $result ? $result->id : null;
 }
 
-?>
+function getWhmcsDomainIdFromNamingo($namingoDomainName) {
+    return Capsule::table('tbldomains')
+        ->whereRaw('LOWER(domain) = ?', [strtolower($namingoDomainName)])
+        ->value('id');
+}
