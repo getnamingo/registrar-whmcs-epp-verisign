@@ -302,7 +302,7 @@ function verisign_RegisterDomain($params = array())
         }
 
         // Insert domain
-        insertDomain($params, []);
+        verisign_insertDomain($params, []);
     }
 
     catch(exception $e) {
@@ -497,7 +497,7 @@ function verisign_GetNameservers($params = array())
             $return["ns{$i}"] = (string)$ns;
         }
         
-        $whmcsDomainId = getWhmcsDomainIdFromNamingo($params['domainname']);
+        $whmcsDomainId = verisign_getWhmcsDomainIdFromNamingo($params['domainname']);
 
         $status = array();
         Capsule::table('namingo_domain_status')->where('domain_id', '=', $whmcsDomainId)->delete();
@@ -1337,7 +1337,7 @@ function verisign_ClientAreaCustomButtonArray()
 function verisign_AdminCustomButtonArray($params = array())
 {
     _verisign_log(__FUNCTION__, $params);
-    $domainid = getNamingoDomainId($params['domainid']);
+    $domainid = verisign_getNamingoDomainId($params['domainid']);
 
     // $domain = Capsule::table('tbldomains')->where('id', $domainid)->first();
 
@@ -1420,9 +1420,9 @@ function verisign_OnHoldDomain($params = array())
        xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"
        xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
         <domain:name>{{ name }}</domain:name>
-            <domain:add>
-                 <domain:status s="clientHold" lang="en">clientHold</domain:status>
-               </domain:add>
+        <domain:add>
+          <domain:status s="clientHold" lang="en">clientHold</domain:status>
+        </domain:add>
       </domain:update>
     </update>
     <extension>
@@ -1954,7 +1954,7 @@ function _verisign_log($func, $params = false)
     fclose($handle);
 }
 
-function insertDomain($params, $contactIds) {
+function verisign_insertDomain($params, $contactIds) {
     // Calculate expiry date
     $crdate = date('Y-m-d H:i:s.u');
     $exdate = date('Y-m-d H:i:s.u', strtotime("+{$params['regperiod']} years"));
@@ -1981,7 +1981,7 @@ function insertDomain($params, $contactIds) {
     return $domainId;
 }
 
-function getNamingoDomainId($whmcsDomainId) {
+function verisign_getNamingoDomainId($whmcsDomainId) {
     $result = Capsule::selectOne("
         SELECT namingo_domain.id
         FROM namingo_domain
@@ -1993,7 +1993,7 @@ function getNamingoDomainId($whmcsDomainId) {
     return $result ? $result->id : null;
 }
 
-function getWhmcsDomainIdFromNamingo($namingoDomainName) {
+function verisign_getWhmcsDomainIdFromNamingo($namingoDomainName) {
     return Capsule::table('tbldomains')
         ->whereRaw('LOWER(domain) = ?', [strtolower($namingoDomainName)])
         ->value('id');
