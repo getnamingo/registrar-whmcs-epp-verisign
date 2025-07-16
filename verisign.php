@@ -20,7 +20,7 @@ use WHMCS\Domain\Registrar\Domain;
 function verisign_MetaData()
 {
     return array(
-        'DisplayName' => 'EPP Registry',
+        'DisplayName' => 'VeriSign EPP Registry',
         'APIVersion' => '1.1',
     );
 }
@@ -134,8 +134,11 @@ function verisign_RegisterDomain($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
         $from[] = '/{{ clTRID }}/';
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-check-' . $clTRID);
         $xml = preg_replace($from, $to, '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -152,7 +155,7 @@ function verisign_RegisterDomain($params = array())
     </check>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -183,6 +186,9 @@ function verisign_RegisterDomain($params = array())
         $from = $to = array();
         $from[] = '/{{ name }}/';
         $to[] = htmlspecialchars($params["{$ns}"]);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-check-' . $clTRID);
@@ -200,7 +206,7 @@ function verisign_RegisterDomain($params = array())
     </check>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -216,6 +222,9 @@ function verisign_RegisterDomain($params = array())
         $from = $to = array();
         $from[] = '/{{ name }}/';
         $to[] = htmlspecialchars($params["{$ns}"]);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-create-' . $clTRID);
@@ -232,7 +241,7 @@ function verisign_RegisterDomain($params = array())
     </create>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -243,7 +252,7 @@ function verisign_RegisterDomain($params = array())
 
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
         $from[] = '/{{ period }}/';
         $to[] = htmlspecialchars($params['regperiod']);
         $from[] = '/{{ ns1 }}/';
@@ -258,6 +267,9 @@ function verisign_RegisterDomain($params = array())
         $to[] = htmlspecialchars($params['ns5']);
         $from[] = '/{{ authInfo }}/';
         $to[] = htmlspecialchars($s->generateObjectPW());
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-create-' . $clTRID);
@@ -287,7 +299,7 @@ function verisign_RegisterDomain($params = array())
     </create>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -326,7 +338,10 @@ function verisign_RenewDomain($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -344,7 +359,7 @@ function verisign_RenewDomain($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -356,11 +371,14 @@ function verisign_RenewDomain($params = array())
         $expDate = preg_replace("/^(\d+\-\d+\-\d+)\D.*$/", "$1", $expDate);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
         $from[] = '/{{ regperiod }}/';
         $to[] = htmlspecialchars($params['regperiod']);
         $from[] = '/{{ expDate }}/';
         $to[] = htmlspecialchars($expDate);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-renew-' . $clTRID);
@@ -379,7 +397,7 @@ function verisign_RenewDomain($params = array())
     </renew>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -409,11 +427,14 @@ function verisign_TransferDomain($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
         $from[] = '/{{ years }}/';
         $to[] = htmlspecialchars($params['regperiod']);
         $from[] = '/{{ authInfo_pw }}/';
         $to[] = htmlspecialchars($params['transfersecret']);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-transfer-' . $clTRID);
@@ -434,7 +455,7 @@ function verisign_TransferDomain($params = array())
     </transfer>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -465,7 +486,10 @@ function verisign_GetNameservers($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -483,7 +507,7 @@ function verisign_GetNameservers($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -532,7 +556,10 @@ function verisign_SaveNameservers($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -550,7 +577,7 @@ function verisign_SaveNameservers($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -604,7 +631,10 @@ function verisign_SaveNameservers($params = array())
             $from[] = '/{{ rem }}/';
             $to[] = (empty($text) ? '' : "<domain:rem><domain:ns>\n{$text}</domain:ns></domain:rem>\n");
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
             $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-update-' . $clTRID);
@@ -624,7 +654,7 @@ function verisign_SaveNameservers($params = array())
     </update>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -655,7 +685,10 @@ function verisign_GetRegistrarLock($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -673,7 +706,7 @@ function verisign_GetRegistrarLock($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -708,7 +741,10 @@ function verisign_SaveRegistrarLock($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -726,7 +762,7 @@ function verisign_SaveRegistrarLock($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -777,7 +813,10 @@ function verisign_SaveRegistrarLock($params = array())
             $from[] = '/{{ rem }}/';
             $to[] = (empty($text) ? '' : "<domain:rem>\n{$text}</domain:rem>\n");
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
             $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-update-' . $clTRID);
@@ -797,7 +836,7 @@ function verisign_SaveRegistrarLock($params = array())
     </update>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -843,7 +882,10 @@ function verisign_GetEPPCode($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -861,7 +903,7 @@ function verisign_GetEPPCode($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -900,6 +942,9 @@ function verisign_RegisterNameserver($params = array())
         $from = $to = array();
         $from[] = '/{{ name }}/';
         $to[] = htmlspecialchars($params['nameserver']);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-check-' . $clTRID);
@@ -916,7 +961,7 @@ function verisign_RegisterNameserver($params = array())
     </check>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -935,6 +980,9 @@ function verisign_RegisterNameserver($params = array())
         $to[] = htmlspecialchars($params['ipaddress']);
         $from[] = '/{{ v }}/';
         $to[] = (preg_match('/:/', $params['ipaddress']) ? 'v6' : 'v4');
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-create-' . $clTRID);
@@ -952,7 +1000,7 @@ function verisign_RegisterNameserver($params = array())
     </create>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -991,6 +1039,9 @@ function verisign_ModifyNameserver($params = array())
         $to[] = htmlspecialchars($params['newipaddress']);
         $from[] = '/{{ v2 }}/';
         $to[] = (preg_match('/:/', $params['newipaddress']) ? 'v6' : 'v4');
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-update-' . $clTRID);
@@ -1013,7 +1064,7 @@ function verisign_ModifyNameserver($params = array())
     </update>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1044,6 +1095,9 @@ function verisign_DeleteNameserver($params = array())
         $from = $to = array();
         $from[] = '/{{ name }}/';
         $to[] = htmlspecialchars($params['nameserver']);
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-host-delete-' . $clTRID);
@@ -1060,7 +1114,7 @@ function verisign_DeleteNameserver($params = array())
     </delete>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1090,7 +1144,10 @@ function verisign_RequestDelete($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-delete-' . $clTRID);
@@ -1107,7 +1164,7 @@ function verisign_RequestDelete($params = array())
     </delete>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1144,7 +1201,7 @@ function verisign_manageDNSSECDSRecords($params = array())
 
             $from = $to = array();
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
 
             $from[] = '/{{ keyTag }}/';
             $to[] = htmlspecialchars($keyTag);
@@ -1157,6 +1214,10 @@ function verisign_manageDNSSECDSRecords($params = array())
 
             $from[] = '/{{ digest }}/';
             $to[] = htmlspecialchars($digest);
+            
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
 
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
@@ -1185,7 +1246,7 @@ function verisign_manageDNSSECDSRecords($params = array())
         </secDNS:add>
       </secDNS:update>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1202,7 +1263,7 @@ function verisign_manageDNSSECDSRecords($params = array())
 
             $from = $to = array();
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
 
             $from[] = '/{{ keyTag }}/';
             $to[] = htmlspecialchars($keyTag);
@@ -1215,6 +1276,10 @@ function verisign_manageDNSSECDSRecords($params = array())
 
             $from[] = '/{{ digest }}/';
             $to[] = htmlspecialchars($digest);
+            
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
 
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
@@ -1243,7 +1308,7 @@ function verisign_manageDNSSECDSRecords($params = array())
         </secDNS:rem>
       </secDNS:update>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1254,7 +1319,10 @@ function verisign_manageDNSSECDSRecords($params = array())
 
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -1272,7 +1340,7 @@ function verisign_manageDNSSECDSRecords($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1363,7 +1431,10 @@ function verisign_OnHoldDomain($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -1381,7 +1452,7 @@ function verisign_OnHoldDomain($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1406,7 +1477,10 @@ function verisign_OnHoldDomain($params = array())
 
         if ($existing_status == 'ok') {
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
             $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-update-' . $clTRID);
@@ -1427,7 +1501,7 @@ function verisign_OnHoldDomain($params = array())
     </update>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1458,7 +1532,10 @@ function verisign_UnHoldDomain($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['domainname']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -1476,7 +1553,7 @@ function verisign_UnHoldDomain($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1496,7 +1573,10 @@ function verisign_UnHoldDomain($params = array())
 
         if ($existing_status == 'clientHold') {
             $from[] = '/{{ name }}/';
-            $to[] = htmlspecialchars($params['domainname']);
+            $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+            $tld = strtoupper(str_replace('.', '', $params['tld']));
+            $from[] = '/{{ tld }}/';
+            $to[] = $tld;
             $from[] = '/{{ clTRID }}/';
             $clTRID = str_replace('.', '', round(microtime(1), 3));
             $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-update-' . $clTRID);
@@ -1517,7 +1597,7 @@ function verisign_UnHoldDomain($params = array())
     </update>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1548,7 +1628,10 @@ function verisign_TransferSync($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['sld'] . '.' . $params['tld']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-transfer-' . $clTRID);
@@ -1566,7 +1649,7 @@ function verisign_TransferSync($params = array())
     </transfer>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
@@ -1627,7 +1710,10 @@ function verisign_Sync($params = array())
         $s = _verisign_startEppClient($params);
         $from = $to = array();
         $from[] = '/{{ name }}/';
-        $to[] = htmlspecialchars($params['sld'] . '.' . $params['tld']);
+        $to[] = htmlspecialchars($params['sld'] . '.' . ltrim($params['tld'], '.'));
+        $tld = strtoupper(str_replace('.', '', $params['tld']));
+        $from[] = '/{{ tld }}/';
+        $to[] = $tld;
         $from[] = '/{{ clTRID }}/';
         $clTRID = str_replace('.', '', round(microtime(1), 3));
         $to[] = htmlspecialchars($params['registrarprefix'] . '-domain-info-' . $clTRID);
@@ -1645,7 +1731,7 @@ function verisign_Sync($params = array())
     </info>
     <extension>
       <namestoreExt:namestoreExt xmlns:namestoreExt="http://www.verisign-grs.com/epp/namestoreExt-1.1">
-        <namestoreExt:subProduct>dotCOM</namestoreExt:subProduct>
+        <namestoreExt:subProduct>dot{{ tld }}</namestoreExt:subProduct>
       </namestoreExt:namestoreExt>
     </extension>
     <clTRID>{{ clTRID }}</clTRID>
